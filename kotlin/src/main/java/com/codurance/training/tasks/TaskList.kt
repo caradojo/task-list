@@ -16,31 +16,34 @@ class TaskList(private val `in`: BufferedReader, private val out: PrintWriter) :
         while (true) {
             out.print("> ")
             out.flush()
-            val command: String
+            val line: String
             try {
-                command = `in`.readLine()
+                line = `in`.readLine()
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
 
-            if (command == QUIT) {
+            if (line == QUIT) {
                 break
             }
-            execute(command)
+            execute(Command(line), line)
         }
     }
 
-    private fun execute(commandLine: String) {
-        val commandRest = commandLine.split(" ".toRegex(), 2).toTypedArray()
-        val command = commandRest[0]
-        when (command) {
-            "show" -> show()
-            "add" -> add(commandRest[1])
-            "check" -> check(commandRest[1])
-            "uncheck" -> uncheck(commandRest[1])
-            "help" -> help()
-            else -> error(command)
+    private fun execute(commandLine: Command, line: String) {
+        val commandRest = line.split(" ".toRegex(), 2).toTypedArray()
+        when (commandLine.verb) {
+            Command.Verb.SHOW -> show()
+            Command.Verb.ADD -> add(commandRest[1])
+            Command.Verb.CHECK -> check(commandRest[1])
+            Command.Verb.UNCHECK -> uncheck(commandRest[1])
+            Command.Verb.HELP -> help()
+            Command.Verb.DEADLINE -> deadline(commandLine.dealineArgs)
+            else -> error(commandRest[0])
         }
+    }
+
+    private fun deadline() {
     }
 
     private fun show() {

@@ -52,6 +52,22 @@ public final class ApplicationTest {
     }
 
     @Test(timeout = 1000) public void
+    it_works_with_deadlines() throws IOException {
+        execute("show");
+
+        execute("add project secrets");
+        execute("add task secrets Eat more donuts.");
+        execute("add task secrets Destroy all humans.");
+        execute("deadline 1 20190319");
+        execute("show");
+        readLines(
+                "secrets",
+                "    [ ] 1: Eat more donuts. Due date 20190319",
+                "    [ ] 2: Destroy all humans.",
+                ""
+        );
+    }
+        @Test(timeout = 1000) public void
     it_works() throws IOException {
         execute("show");
 
