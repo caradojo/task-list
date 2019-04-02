@@ -1,14 +1,14 @@
 package com.codurance.training.tasks.command;
 
-public class AddCommand implements Command {
+public class AddProjectCommand implements Command {
     private String command;
 
-    public AddCommand(String command) {
+    public AddProjectCommand(String command) {
         this.command = command;
     }
 
     @Override
     public void execute(CommandExecutor taskList) {
-        taskList.add(command);
+        taskList.addProject(command);
     }
 }
