@@ -1,10 +1,9 @@
 package com.codurance.training.tasks;
 
 import com.codurance.training.tasks.command.CommandExecutor;
-import com.codurance.training.tasks.command.CommandFactory;
+import com.codurance.training.tasks.terminal.TerminalInputAdapter;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -14,11 +13,11 @@ import java.util.Map;
 
 public final class TaskList implements Runnable, CommandExecutor {
     private final Map<String, List<Task>> tasks = new LinkedHashMap<>();
-    private final BufferedReader in;
     private final PrintWriter out;
 
     private long lastId = 0;
     private boolean exit;
+    private TerminalInputAdapter terminalInputAdapter;
 
     public static void main(String[] args) throws Exception {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -27,21 +26,15 @@ public final class TaskList implements Runnable, CommandExecutor {
     }
 
     public TaskList(BufferedReader reader, PrintWriter writer) {
-        this.in = reader;
         this.out = writer;
+        terminalInputAdapter = new TerminalInputAdapter(reader);
     }
 
     public void run() {
         while (!exit) {
             out.print("> ");
             out.flush();
-            String commandLine;
-            try {
-                commandLine = in.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            CommandFactory.createCommand(commandLine).execute(this);
+            terminalInputAdapter.readCommand().execute(this);
         }
     }
 
