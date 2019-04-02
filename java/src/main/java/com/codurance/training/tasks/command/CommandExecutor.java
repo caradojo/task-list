@@ -14,4 +14,6 @@ public interface CommandExecutor {
     void addTask(String projectName, String description);
 
     void addProject(String projectName);
+
+    void quit();
 }

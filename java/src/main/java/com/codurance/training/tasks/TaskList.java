@@ -13,13 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public final class TaskList implements Runnable, CommandExecutor {
-    private static final String QUIT = "quit";
-
     private final Map<String, List<Task>> tasks = new LinkedHashMap<>();
     private final BufferedReader in;
     private final PrintWriter out;
 
     private long lastId = 0;
+    private boolean exit;
 
     public static void main(String[] args) throws Exception {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -33,19 +32,16 @@ public final class TaskList implements Runnable, CommandExecutor {
     }
 
     public void run() {
-        while (true) {
+        while (!exit) {
             out.print("> ");
             out.flush();
-            String command;
+            String commandLine;
             try {
-                command = in.readLine();
+                commandLine = in.readLine();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if (command.equals(QUIT)) {
-                break;
-            }
-            CommandFactory.createCommand(command).execute(this);
+            CommandFactory.createCommand(commandLine).execute(this);
         }
     }
 
@@ -62,6 +58,11 @@ public final class TaskList implements Runnable, CommandExecutor {
 
     public void addProject(String name) {
         tasks.put(name, new ArrayList<Task>());
+    }
+
+    @Override
+    public void quit() {
+        exit = true;
     }
 
     public void addTask(String project, String description) {

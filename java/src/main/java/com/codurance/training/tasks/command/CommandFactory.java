@@ -17,6 +17,8 @@ public class CommandFactory {
                 return new UncheckCommand(commandRest[1]);
             case "help":
                 return new HelpCommand();
+            case "quit":
+                return new QuitCommand();
             default:
                 return new ErrorCommand(commandRest[0]);
         }
