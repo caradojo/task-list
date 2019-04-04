@@ -1,15 +1,16 @@
 package com.codurance.training.tasks.command;
 
+import com.codurance.training.tasks.TaskList;
+
 public class ErrorCommand implements Command {
-    private String command;
+    private TaskList taskList;
 
-    public ErrorCommand(String command) {
-
-        this.command = command;
+    public ErrorCommand(TaskList taskList) {
+        this.taskList = taskList;
     }
 
     @Override
-    public void execute(CommandExecutor taskList) {
-        taskList.error(command);
+    public void execute(CommandLineParser parser) {
+        taskList.error(parser.command);
     }
 }

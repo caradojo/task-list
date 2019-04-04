@@ -1,7 +1,6 @@
 package com.codurance.training.tasks.terminal;
 
-import com.codurance.training.tasks.command.Command;
-import com.codurance.training.tasks.command.CommandFactory;
+import com.codurance.training.tasks.command.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,13 +13,15 @@ public class TerminalInputAdapter {
         this.in = in;
     }
 
-    public Command readCommand() {
+    public void executeCommand(CommandSelector commandSelector) {
         String commandLine;
         try {
             commandLine = in.readLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return CommandFactory.createCommand(commandLine);
+        CommandLineParser parser = new CommandLineParser(commandLine);
+
+        commandSelector.selectCommand(parser.command).execute(parser);
     }
 }

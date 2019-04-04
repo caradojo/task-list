@@ -1,25 +1,24 @@
 package com.codurance.training.tasks;
 
-import com.codurance.training.tasks.command.CommandExecutor;
+import com.codurance.training.tasks.command.*;
 import com.codurance.training.tasks.terminal.TerminalInputAdapter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public final class TaskList implements Runnable, CommandExecutor {
+public final class TaskList implements Runnable {
     private final Map<String, List<Task>> tasks = new LinkedHashMap<>();
     private final PrintWriter out;
+    private final HashMap<String, Command> commandMap;
 
     private long lastId = 0;
     private boolean exit;
     private TerminalInputAdapter terminalInputAdapter;
+    private CommandSelector commandSelector;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(System.out);
         new TaskList(in, out).run();
@@ -27,18 +26,27 @@ public final class TaskList implements Runnable, CommandExecutor {
 
     public TaskList(BufferedReader reader, PrintWriter writer) {
         this.out = writer;
+
         terminalInputAdapter = new TerminalInputAdapter(reader);
+
+        commandMap = new HashMap<>();
+        commandMap.put(ShowCommand.TOKEN, new ShowCommand(this));
+        commandMap.put(AddCommand.TOKEN, new AddCommand(this));
+        commandMap.put(CheckCommand.TOKEN, new CheckCommand(this));
+        commandMap.put(UncheckCommand.TOKEN, new UncheckCommand(this));
+        commandMap.put(HelpCommand.TOKEN, new HelpCommand(this));
+        commandMap.put(QuitCommand.TOKEN, new QuitCommand(this));
+        commandSelector = new CommandSelector(commandMap, new ErrorCommand(this));
     }
 
     public void run() {
         while (!exit) {
             out.print("> ");
             out.flush();
-            terminalInputAdapter.readCommand().execute(this);
+            terminalInputAdapter.executeCommand(commandSelector);
         }
     }
 
-    @Override
     public void show() {
         for (Map.Entry<String, List<Task>> project : tasks.entrySet()) {
             out.println(project.getKey());
@@ -50,10 +58,9 @@ public final class TaskList implements Runnable, CommandExecutor {
     }
 
     public void addProject(String name) {
-        tasks.put(name, new ArrayList<Task>());
+        tasks.put(name, new ArrayList<>());
     }
 
-    @Override
     public void quit() {
         exit = true;
     }
@@ -68,12 +75,10 @@ public final class TaskList implements Runnable, CommandExecutor {
         projectTasks.add(new Task(nextId(), description, false));
     }
 
-    @Override
     public void check(String idString) {
         setDone(idString, true);
     }
 
-    @Override
     public void uncheck(String idString) {
         setDone(idString, false);
     }
@@ -92,7 +97,6 @@ public final class TaskList implements Runnable, CommandExecutor {
         out.println();
     }
 
-    @Override
     public void help() {
         out.println("Commands:");
         out.println("  show");
@@ -103,7 +107,6 @@ public final class TaskList implements Runnable, CommandExecutor {
         out.println();
     }
 
-    @Override
     public void error(String command) {
         out.printf("I don't know what the command \"%s\" is.", command);
         out.println();

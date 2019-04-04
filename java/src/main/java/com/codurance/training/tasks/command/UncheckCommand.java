@@ -1,15 +1,20 @@
 package com.codurance.training.tasks.command;
 
+import com.codurance.training.tasks.TaskList;
+
 public class UncheckCommand implements Command {
-    private String taskId;
 
-    public UncheckCommand(String taskId) {
+    public static final String TOKEN = "uncheck";
+    private TaskList taskList;
 
-        this.taskId = taskId;
+    public UncheckCommand(TaskList taskList) {
+        this.taskList = taskList;
+
     }
 
     @Override
-    public void execute(CommandExecutor taskList) {
-        taskList.uncheck(taskId);
+    public void execute(CommandLineParser parser) {
+
+        this.taskList.uncheck(parser.getArgs());
     }
 }

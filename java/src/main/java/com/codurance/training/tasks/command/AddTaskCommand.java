@@ -1,16 +1,17 @@
 package com.codurance.training.tasks.command;
 
-public class AddTaskCommand implements Command {
-    private String projectName;
-    private String description;
+import com.codurance.training.tasks.TaskList;
 
-    public AddTaskCommand(String projectName, String description) {
-        this.projectName = projectName;
-        this.description = description;
+public class AddTaskCommand implements Command {
+    private TaskList taskList;
+
+    AddTaskCommand(TaskList taskList) {
+        this.taskList = taskList;
     }
 
     @Override
-    public void execute(CommandExecutor taskList) {
-        taskList.addTask(projectName, description);
+    public void execute(CommandLineParser parser) {
+        CommandLineParser next = parser.next();
+        this.taskList.addTask(next.command, next.getArgs());
     }
 }

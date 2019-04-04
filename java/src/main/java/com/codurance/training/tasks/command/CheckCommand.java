@@ -1,14 +1,18 @@
 package com.codurance.training.tasks.command;
 
-public class CheckCommand implements Command {
-    private String taskId;
+import com.codurance.training.tasks.TaskList;
 
-    public CheckCommand(String taskId) {
-        this.taskId = taskId;
+public class CheckCommand implements Command {
+    public static final String TOKEN = "check";
+    private TaskList taskList;
+
+    public CheckCommand(TaskList taskList) {
+        this.taskList = taskList;
+
     }
 
     @Override
-    public void execute(CommandExecutor taskList) {
-        taskList.check(taskId);
+    public void execute(CommandLineParser parser) {
+        this.taskList.check(parser.getArgs());
     }
 }
