@@ -2,26 +2,32 @@ package com.codurance.training.tasks.command;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.HashMap;
+
+
 public class CommandFactory {
+
+    public interface CommandLineFactory{
+        Command create(String[] args);
+    }
     public static Command createCommand(String commandLine) {
         String[] commandRest = commandLine.split(" ", 2);
         String command = commandRest[0];
-        switch (command) {
-            case "show":
-                return new ShowCommand();
-            case "add":
-                return buildAddCommand(commandRest[1]);
-            case "check":
-                return new CheckCommand(commandRest[1]);
-            case "uncheck":
-                return new UncheckCommand(commandRest[1]);
-            case "help":
-                return new HelpCommand();
-            case "quit":
-                return new QuitCommand();
-            default:
-                return new ErrorCommand(commandRest[0]);
+
+        HashMap<String, CommandLineFactory> commandMap = new HashMap<>();
+        commandMap.put("show", (t) -> new ShowCommand());
+        commandMap.put("add", (t) -> buildAddCommand(commandRest[1]));
+        commandMap.put("check", (t) -> new CheckCommand(commandRest[1]));
+        commandMap.put("uncheck", (t) -> new UncheckCommand(commandRest[1]));
+        commandMap.put("help", (t) -> new HelpCommand());
+        commandMap.put("quit", (t) -> new QuitCommand());
+
+        CommandLineFactory factory = commandMap.get(command);
+        if (factory != null)
+        {
+            return factory.create(commandRest);
         }
+        return new ErrorCommand(commandRest[0]);
     }
 
     private static Command buildAddCommand(String commandLine) {

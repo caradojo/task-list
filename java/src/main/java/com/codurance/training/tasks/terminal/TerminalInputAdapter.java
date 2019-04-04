@@ -1,6 +1,5 @@
 package com.codurance.training.tasks.terminal;
 
-import com.codurance.training.tasks.TaskList;
 import com.codurance.training.tasks.command.Command;
 import com.codurance.training.tasks.command.CommandFactory;
 
