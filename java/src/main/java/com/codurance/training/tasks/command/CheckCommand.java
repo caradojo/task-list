@@ -2,7 +2,7 @@ package com.codurance.training.tasks.command;
 
 import com.codurance.training.tasks.TaskList;
 
-public class CheckCommand implements Command {
+public class CheckCommand implements CommandParser {
     public static final String TOKEN = "check";
     private TaskList taskList;
 
@@ -12,7 +12,7 @@ public class CheckCommand implements Command {
     }
 
     @Override
-    public void execute(CommandLineParser parser) {
-        this.taskList.check(parser.getArgs());
+    public ExecutableCommand parse(CommandOptionIterator parser) {
+        return () -> this.taskList.check(parser.getArgs());
     }
 }

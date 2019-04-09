@@ -2,7 +2,7 @@ package com.codurance.training.tasks.command;
 
 import com.codurance.training.tasks.TaskList;
 
-public class HelpCommand implements Command {
+public class HelpCommand implements CommandParser {
     public static final String TOKEN = "help";
     private TaskList taskList;
 
@@ -12,7 +12,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void execute(CommandLineParser parser) {
-        this.taskList.help();
+    public ExecutableCommand parse(CommandOptionIterator parser) {
+        return () -> this.taskList.help();
     }
 }

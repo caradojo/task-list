@@ -2,7 +2,7 @@ package com.codurance.training.tasks.command;
 
 import com.codurance.training.tasks.TaskList;
 
-public class ErrorCommand implements Command {
+public class ErrorCommand implements CommandParser {
     private TaskList taskList;
 
     public ErrorCommand(TaskList taskList) {
@@ -10,7 +10,7 @@ public class ErrorCommand implements Command {
     }
 
     @Override
-    public void execute(CommandLineParser parser) {
-        taskList.error(parser.command);
+    public ExecutableCommand parse(CommandOptionIterator parser) {
+        return () -> taskList.error(parser.command);
     }
 }

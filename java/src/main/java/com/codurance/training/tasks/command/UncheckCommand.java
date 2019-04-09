@@ -2,7 +2,7 @@ package com.codurance.training.tasks.command;
 
 import com.codurance.training.tasks.TaskList;
 
-public class UncheckCommand implements Command {
+public class UncheckCommand implements CommandParser {
 
     public static final String TOKEN = "uncheck";
     private TaskList taskList;
@@ -13,8 +13,7 @@ public class UncheckCommand implements Command {
     }
 
     @Override
-    public void execute(CommandLineParser parser) {
-
-        this.taskList.uncheck(parser.getArgs());
+    public ExecutableCommand parse(CommandOptionIterator parser) {
+        return () -> this.taskList.uncheck(parser.getArgs());
     }
 }

@@ -11,12 +11,11 @@ import java.util.*;
 public final class TaskList implements Runnable {
     private final Map<String, List<Task>> tasks = new LinkedHashMap<>();
     private final PrintWriter out;
-    private final HashMap<String, Command> commandMap;
+    private final HashMap<String, CommandParser> commandMap;
 
     private long lastId = 0;
     private boolean exit;
     private TerminalInputAdapter terminalInputAdapter;
-    private CommandSelector commandSelector;
 
     public static void main(String[] args) {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -27,8 +26,6 @@ public final class TaskList implements Runnable {
     public TaskList(BufferedReader reader, PrintWriter writer) {
         this.out = writer;
 
-        terminalInputAdapter = new TerminalInputAdapter(reader);
-
         commandMap = new HashMap<>();
         commandMap.put(ShowCommand.TOKEN, new ShowCommand(this));
         commandMap.put(AddCommand.TOKEN, new AddCommand(this));
@@ -36,14 +33,16 @@ public final class TaskList implements Runnable {
         commandMap.put(UncheckCommand.TOKEN, new UncheckCommand(this));
         commandMap.put(HelpCommand.TOKEN, new HelpCommand(this));
         commandMap.put(QuitCommand.TOKEN, new QuitCommand(this));
-        commandSelector = new CommandSelector(commandMap, new ErrorCommand(this));
+        terminalInputAdapter = new TerminalInputAdapter(
+                reader,
+                new CommandLineParser(commandMap, new ErrorCommand(this)));
     }
 
     public void run() {
         while (!exit) {
             out.print("> ");
             out.flush();
-            terminalInputAdapter.executeCommand(commandSelector);
+            terminalInputAdapter.executeCommand();
         }
     }
 

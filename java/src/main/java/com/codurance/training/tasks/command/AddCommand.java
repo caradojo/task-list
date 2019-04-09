@@ -3,7 +3,7 @@ package com.codurance.training.tasks.command;
 import com.codurance.training.tasks.TaskList;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class AddCommand implements Command {
+public class AddCommand implements CommandParser {
     public static final String TOKEN = "add";
     private TaskList taskList;
 
@@ -12,12 +12,12 @@ public class AddCommand implements Command {
     }
 
     @Override
-    public void execute(CommandLineParser parser) {
-        CommandLineParser subCommand = parser.next();
-        buildAddCommand(subCommand).execute(subCommand);
+    public ExecutableCommand parse(CommandOptionIterator parser) {
+        CommandOptionIterator subCommand = parser.next();
+        return buildAddCommand(subCommand).parse(subCommand);
     }
 
-    private Command buildAddCommand(CommandLineParser commandLine) {
+    private CommandParser buildAddCommand(CommandOptionIterator commandLine) {
         if (commandLine.command.equals("project")) {
             return new AddProjectCommand(taskList);
         } else if (commandLine.command.equals("task")) {

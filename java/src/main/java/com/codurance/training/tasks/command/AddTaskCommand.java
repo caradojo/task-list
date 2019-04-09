@@ -2,7 +2,7 @@ package com.codurance.training.tasks.command;
 
 import com.codurance.training.tasks.TaskList;
 
-public class AddTaskCommand implements Command {
+public class AddTaskCommand implements CommandParser {
     private TaskList taskList;
 
     AddTaskCommand(TaskList taskList) {
@@ -10,8 +10,8 @@ public class AddTaskCommand implements Command {
     }
 
     @Override
-    public void execute(CommandLineParser parser) {
-        CommandLineParser next = parser.next();
-        this.taskList.addTask(next.command, next.getArgs());
+    public ExecutableCommand parse(CommandOptionIterator parser) {
+        CommandOptionIterator next = parser.next();
+        return () -> this.taskList.addTask(next.command, next.getArgs());
     }
 }
