@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class TerminalInputAdapter {
     private BufferedReader in;
+    //private CommandLineParser parser;
 
     public TerminalInputAdapter(BufferedReader in) {
 
@@ -23,5 +24,10 @@ public class TerminalInputAdapter {
         CommandLineParser parser = new CommandLineParser(commandLine);
 
         commandSelector.selectCommand(parser.command).execute(parser);
+
+        // Command command = parser.parse(commandLine);
+        //command.execute();
+
+        // commandSelector.selectCommand(parser.command).execute(parser.commandRest);
     }
 }
