@@ -1,10 +1,10 @@
 package com.codurance.training.tasks.command;
 
-public class CommandOptionIterator {
+public class CommandLine {
     public final String command;
     private final String[] commandRest;
 
-    public CommandOptionIterator(String commandLine) {
+    public CommandLine(String commandLine) {
         commandRest = commandLine.split(" ", 2);
         command = commandRest[0];
 
@@ -14,7 +14,9 @@ public class CommandOptionIterator {
         return commandRest[1];
     }
 
-    CommandOptionIterator next() {
-        return new CommandOptionIterator(commandRest[1]);
+    OptionLine option() {
+        return new OptionLine(commandRest[1]);
     }
+
 }
+

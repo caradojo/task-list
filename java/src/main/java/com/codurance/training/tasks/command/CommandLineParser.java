@@ -1,27 +1,25 @@
 package com.codurance.training.tasks.command;
 
-import java.util.Map;
+import java.util.Collection;
 
 
 public class CommandLineParser {
 
-    private Map<String, CommandParser> commandMap;
+    private Collection<CommandParser> commands;
     private ErrorCommand errorCommand;
 
-    public CommandLineParser(Map<String, CommandParser> commandMap, ErrorCommand errorCommand) {
-        this.commandMap = commandMap;
+    public CommandLineParser(Collection<CommandParser> commands, ErrorCommand errorCommand) {
+        this.commands = commands;
         this.errorCommand = errorCommand;
     }
 
-    public ExecutableCommand parse(String commandLine) {
-        CommandOptionIterator parser = new CommandOptionIterator(commandLine);
+    public ExecutableCommand parse(CommandLine commandLine) {
 
-        CommandParser cmd = commandMap.get(parser.command);
-        if (cmd != null)
-        {
-            return cmd.parse(parser);
-        }
-        return errorCommand.parse(parser);
+        CommandParser cmd = commands.stream().filter(p -> p.match(commandLine))
+                .findFirst()
+                .orElse(errorCommand);
+
+        return cmd.parse(commandLine);
     }
 
 }

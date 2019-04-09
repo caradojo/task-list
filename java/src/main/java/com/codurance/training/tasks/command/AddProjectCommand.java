@@ -5,12 +5,18 @@ import com.codurance.training.tasks.TaskList;
 public class AddProjectCommand implements CommandParser {
     private TaskList taskList;
 
-    AddProjectCommand(TaskList taskList) {
+    public AddProjectCommand(TaskList taskList) {
         this.taskList = taskList;
     }
 
     @Override
-    public ExecutableCommand parse(CommandOptionIterator parser) {
-        return () -> this.taskList.addProject(parser.getArgs());
+    public boolean match(CommandLine commandLine) {
+        return commandLine.command.equals("add")
+                && commandLine.option().name.equals("project");
+    }
+
+    @Override
+    public ExecutableCommand parse(CommandLine commandLine) {
+        return () -> this.taskList.addProject(commandLine.option().getArgs());
     }
 }

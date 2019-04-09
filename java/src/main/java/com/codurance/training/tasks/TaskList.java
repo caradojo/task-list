@@ -6,12 +6,12 @@ import com.codurance.training.tasks.terminal.TerminalInputAdapter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public final class TaskList implements Runnable {
     private final Map<String, List<Task>> tasks = new LinkedHashMap<>();
     private final PrintWriter out;
-    private final HashMap<String, CommandParser> commandMap;
 
     private long lastId = 0;
     private boolean exit;
@@ -26,16 +26,17 @@ public final class TaskList implements Runnable {
     public TaskList(BufferedReader reader, PrintWriter writer) {
         this.out = writer;
 
-        commandMap = new HashMap<>();
-        commandMap.put(ShowCommand.TOKEN, new ShowCommand(this));
-        commandMap.put(AddCommand.TOKEN, new AddCommand(this));
-        commandMap.put(CheckCommand.TOKEN, new CheckCommand(this));
-        commandMap.put(UncheckCommand.TOKEN, new UncheckCommand(this));
-        commandMap.put(HelpCommand.TOKEN, new HelpCommand(this));
-        commandMap.put(QuitCommand.TOKEN, new QuitCommand(this));
         terminalInputAdapter = new TerminalInputAdapter(
                 reader,
-                new CommandLineParser(commandMap, new ErrorCommand(this)));
+                new CommandLineParser(Arrays.asList(
+                        new ShowCommand(this),
+                        new AddProjectCommand(this),
+                        new AddTaskCommand(this),
+                        new CheckCommand(this),
+                        new UncheckCommand(this),
+                        new HelpCommand(this),
+                        new QuitCommand(this)),
+                        new ErrorCommand(this)));
     }
 
     public void run() {

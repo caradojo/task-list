@@ -23,6 +23,6 @@ public class TerminalInputAdapter {
             throw new RuntimeException(e);
         }
 
-        parser.parse(commandLine).execute();
+        parser.parse(new CommandLine(commandLine)).execute();
     }
 }

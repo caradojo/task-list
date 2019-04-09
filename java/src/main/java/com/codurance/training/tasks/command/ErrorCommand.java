@@ -10,7 +10,12 @@ public class ErrorCommand implements CommandParser {
     }
 
     @Override
-    public ExecutableCommand parse(CommandOptionIterator parser) {
-        return () -> taskList.error(parser.command);
+    public boolean match(CommandLine commandLine) {
+        return false;
+    }
+
+    @Override
+    public ExecutableCommand parse(CommandLine commandLine) {
+        return () -> taskList.error(commandLine.command);
     }
 }
