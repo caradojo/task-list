@@ -113,13 +113,7 @@ public final class Application implements Runnable {
                 .flatMap(p -> p.getTasks().stream())
                 .filter(t -> t.matches(id))
                 .findFirst()
-                .map(t -> (Runnable) () -> {
-                    if (done) {
-                        t.done();
-                    } else {
-                        t.undone();
-                    };
-                })
+                .<Runnable>map(t -> done ? t::done : t::undone)
                 .orElse(() -> {
                     out.printf("Could not find a task with an ID of %d.", id.id);
                     out.println();
