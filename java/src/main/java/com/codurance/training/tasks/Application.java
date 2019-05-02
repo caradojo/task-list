@@ -108,20 +108,23 @@ public final class Application implements Runnable {
 
     private void setDone(String idString, boolean done) {
         TaskId id = new TaskId(Long.parseLong(idString));
-        for (Map.Entry<ProjectName, Project> projectEntry : projects.entrySet()) {
-            for (Task task : projectEntry.getValue().getTasks()) {
-                if (task.matches(id)) {
+        projects.values()
+                .stream()
+                .flatMap(p -> p.getTasks().stream())
+                .filter(t -> t.matches(id))
+                .findFirst()
+                .map(t -> (Runnable) () -> {
                     if (done) {
-                        task.done();
+                        t.done();
                     } else {
-                        task.undone();
-                    }
-                    return;
-                }
-            }
-        }
-        out.printf("Could not find a task with an ID of %d.", id.id);
-        out.println();
+                        t.undone();
+                    };
+                })
+                .orElse(() -> {
+                    out.printf("Could not find a task with an ID of %d.", id.id);
+                    out.println();
+                })
+                .run();
     }
 
     private void help() {
