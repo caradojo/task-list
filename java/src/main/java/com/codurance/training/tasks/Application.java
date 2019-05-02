@@ -6,9 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class Application implements Runnable {
     private static final String QUIT = "quit";
+
+    private static final Function<Task, Runnable> MARK_TASK_DONE = task -> task::done;
+    private static final Function<Task, Runnable> MARK_TASK_UNDONE = task -> task::undone;
 
     private final Map<ProjectName, Project> projects = new LinkedHashMap<>();
     private final BufferedReader in;
@@ -99,21 +104,21 @@ public final class Application implements Runnable {
     }
 
     private void check(String idString) {
-        setDone(idString, true);
+        setDone(idString, MARK_TASK_DONE);
     }
 
     private void uncheck(String idString) {
-        setDone(idString, false);
+        setDone(idString, MARK_TASK_UNDONE);
     }
 
-    private void setDone(String idString, boolean done) {
+    private void setDone(String idString, Function<Task, Runnable> markTask) {
         TaskId id = new TaskId(Long.parseLong(idString));
         projects.values()
                 .stream()
                 .flatMap(p -> p.getTasks().stream())
                 .filter(t -> t.matches(id))
                 .findFirst()
-                .<Runnable>map(t -> done ? t::done : t::undone)
+                .map(markTask::apply)
                 .orElse(() -> {
                     out.printf("Could not find a task with an ID of %d.", id.id);
                     out.println();
