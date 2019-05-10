@@ -13,7 +13,7 @@ public final class Application implements Runnable {
     private final Map<ProjectName, Project> projects = new LinkedHashMap<>();
     private final Map<TaskId, Task> tasks = new LinkedHashMap<>();
     private final BufferedReader in;
-    public final PrintWriter out;
+    private final PrintWriter out;
 
     private long lastId = 0;
 
@@ -23,7 +23,7 @@ public final class Application implements Runnable {
         new Application(in, out).run();
     }
 
-    public Application(BufferedReader reader, PrintWriter writer) {
+    Application(BufferedReader reader, PrintWriter writer) {
         this.in = reader;
         this.out = writer;
     }
