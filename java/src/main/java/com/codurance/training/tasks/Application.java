@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class Application implements Runnable {
     private static final String QUIT = "quit";
@@ -109,15 +110,15 @@ public final class Application implements Runnable {
     private void setDone(String idString, boolean done) {
         TaskId id = new TaskId(Long.parseLong(idString));
         for (Map.Entry<ProjectName, Project> projectEntry : projects.entrySet()) {
-            for (Task task : projectEntry.getValue().getTasks()) {
-                if (task.matches(id)) {
-                    if (done) {
-                        task.done();
-                    } else {
-                        task.undone();
-                    }
-                    return;
+            Optional<Task> task = projectEntry.getValue().getTasks().stream().filter(t -> t.matches(id)).findFirst();
+            if (task.isPresent())
+            {
+                if (done) {
+                    task.get().done();
+                } else {
+                    task.get().undone();
                 }
+                return;
             }
         }
         out.printf("Could not find a task with an ID of %d.", id.id);
