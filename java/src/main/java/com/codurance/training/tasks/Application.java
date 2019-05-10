@@ -6,12 +6,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public final class Application implements Runnable {
     private static final String QUIT = "quit";
 
     private final Map<ProjectName, Project> projects = new LinkedHashMap<>();
+    private final Map<TaskId, Task> tasks = new LinkedHashMap<>();
     private final BufferedReader in;
     public final PrintWriter out;
 
@@ -56,10 +56,10 @@ public final class Application implements Runnable {
                 add(commandRest[1]);
                 break;
             case "check":
-                check(commandRest[1]);
+                check(new TaskId(Long.parseLong(commandRest[1])));
                 break;
             case "uncheck":
-                uncheck(commandRest[1]);
+                uncheck(new TaskId(Long.parseLong(commandRest[1])));
                 break;
             case "help":
                 help();
@@ -96,31 +96,32 @@ public final class Application implements Runnable {
             out.println();
             return;
         }
-        project.add(new Task(nextId(), description, false));
+        TaskId id = nextId();
+        Task task = new Task(id, description, false);
+        project.add(task);
+        tasks.put(id, task);
     }
-
-    private void check(String idString) {
-        setDone(idString, true);
-    }
-
-    private void uncheck(String idString) {
-        setDone(idString, false);
-    }
-
-    private void setDone(String idString, boolean done) {
-        TaskId id = new TaskId(Long.parseLong(idString));
-        for (Map.Entry<ProjectName, Project> projectEntry : projects.entrySet()) {
-            Optional<Task> task = projectEntry.getValue().getTasks().stream().filter(t -> t.matches(id)).findFirst();
-            if (task.isPresent())
-            {
-                if (done) {
-                    task.get().done();
-                } else {
-                    task.get().undone();
-                }
-                return;
-            }
+    private void check(TaskId id) {
+        Task taskOrNull = tasks.getOrDefault(id, null);
+        if (taskOrNull != null){
+            taskOrNull.done();
         }
+        else {
+            displayTaskNotFoundError(id);
+        }
+    }
+
+    private void uncheck(TaskId id) {
+        Task taskOrNull = tasks.getOrDefault(id, null);
+        if (taskOrNull != null){
+            taskOrNull.undone();
+        }
+        else {
+            displayTaskNotFoundError(id);
+        }
+    }
+
+    private void displayTaskNotFoundError(TaskId id) {
         out.printf("Could not find a task with an ID of %d.", id.id);
         out.println();
     }

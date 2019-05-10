@@ -1,7 +1,7 @@
 package com.codurance.training.tasks;
 
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.Collection;
 
 public class ProjectSerializer {
     private final PrintWriter out;
@@ -12,7 +12,7 @@ public class ProjectSerializer {
         taskSerializer = new TaskSerializer(out);
     }
 
-    public void serialize(String projectName, List<Task> tasks) {
+    public void serialize(String projectName, Collection<Task> tasks) {
         out.println(projectName);
         tasks.forEach(task -> task.serialize(taskSerializer));
         out.println();

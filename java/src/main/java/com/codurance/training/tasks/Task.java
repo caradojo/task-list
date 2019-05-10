@@ -15,10 +15,6 @@ public final class Task {
         taskSerializer.serialize(id, done, description);
     }
 
-    public boolean matches(TaskId id) {
-        return this.id.equals(id);
-    }
-
     public void done() {
         this.done = true;
     }
